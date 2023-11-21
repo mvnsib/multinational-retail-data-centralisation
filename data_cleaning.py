@@ -6,26 +6,35 @@ class DataCleaning:
     def __init__(self):
         pass
 
-    def clean_null(self, table):
-        table = pd.DataFrame(table)
-        table.replace("NULL", np.NaN, inplace=True)
-        table.dropna(
+    # def clean_null(self, table):
+    #     table = pd.DataFrame(table)
+    #     table.replace("NULL", np.NaN, inplace=True)
+    #     table.dropna(
+    #         subset=["date_of_birth", "email_address", "user_uuid"],
+    #         how="any",
+    #         axis=0,
+    #         inplace=True,
+    #     )
+    #     return table
+
+    # def clean_date(self, table, column):
+    #     table[column] = pd.to_datetime(table[column], errors="coerce")
+    #     return table[column]
+
+    def clean_user_data(self, user_df):
+        user_df["date_of_birth"] = pd.to_datetime(
+            user_df["date_of_birth"], errors="coerce"
+        )
+        user_df["join_date"] = pd.to_datetime(user_df["join_date"], errors="coerce")
+        print(user_df.head())
+        user_df.replace("NULL", np.NaN, inplace=True)
+        user_df.dropna(
             subset=["date_of_birth", "email_address", "user_uuid"],
             how="any",
-            axis=0,
             inplace=True,
         )
-        return table
 
-    def clean_date(self, table, column):
-        table[column] = pd.to_datetime(table[column], errors="coerce")
-        return table[column]
-
-    def clean_user_data(self, user_data):
-        self.clean_date(user_data, "date_of_birth")
-        self.clean_date(user_data, "join_date")
-        self.clean_null(user_data)
-        return user_data
+        return user_df
 
     def clean_card_data(self, card_df):
         card_df["card_number"] = card_df["card_number"].apply(str)
@@ -44,11 +53,10 @@ class DataCleaning:
         )
         store_df.replace("NULL", np.NaN, inplace=True)
         store_df = store_df.replace("NULL", pd.NA)
-        store_df = store_df.drop(columns=["lat"])
-        store_df.dropna(subset=["staff_numbers"], how="any", inplace=True)
-        store_df.dropna(subset=["opening_date"], how="any", inplace=True)
-        store_df.dropna(subset=["latitude"], how="any", inplace=True)
-
+        store_df.dropna(
+            subset=["staff_numbers", "opening_date"], how="any", inplace=True
+        )
+        # store_df.dropna(subset=["opening_date"], how="any", inplace=True)
         return store_df
 
     def convert_product_weights(self, products_df):

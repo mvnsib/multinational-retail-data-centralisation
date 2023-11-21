@@ -16,6 +16,7 @@ def upload_user():
     tables_list = connector.list_db_tables(engine)
 
     df_name = tables_list[1]
+    df = pd.DataFrame(extractor.read_rds_table(connector, df_name))
     df = cleaner.clean_user_data(extractor.read_rds_table(connector, df_name))
     print(df.head())
 
@@ -40,7 +41,7 @@ def upload_dim_card_details():
     connector.upload_to_db(df, "dim_card_details", creds)
 
 
-def upload_store_data():
+def upload_store_details():
     creds = connector.read_db_creds("db_creds.yaml")
     engine = connector.init_db_engine(creds)
     engine.connect()
@@ -48,7 +49,7 @@ def upload_store_data():
     df = extractor.retrieve_stores_data()
     df = cleaner.called_clean_store_data(df)
     df.to_csv("dim_store_data.csv", encoding="utf-8")
-    connector.upload_to_db(df, "dim_store_data", creds)
+    connector.upload_to_db(df, "dim_store_details", creds)
 
 
 def upload_dim_products():
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     # engine.connect()
     # upload_user()
     # upload_dim_card_details()
-    # store_data()
+    upload_store_details()
     # upload_dim_products()
     # upload_order_table()
-    upload_dim_date_times()
+    # upload_dim_date_times()
