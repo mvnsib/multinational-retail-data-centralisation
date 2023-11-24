@@ -88,6 +88,7 @@ def upload_dim_date_times():
     df = extractor.extract_from_link(
         "https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json"
     )
+    df = cleaner.clean_date_time(df)
     connector.upload_to_db(df, "dim_date_times", creds)
 
 
@@ -97,7 +98,7 @@ if __name__ == "__main__":
     # engine.connect()
     # upload_user()
     # upload_dim_card_details()
-    upload_store_details()
+    # upload_store_details()
     # upload_dim_products()
     # upload_order_table()
-    # upload_dim_date_times()
+    upload_dim_date_times()

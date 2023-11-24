@@ -72,6 +72,5 @@ class DataExtractor:
         obj = s3_client.Object(bucket, key)
         body = obj.get()["Body"]
         df = pd.read_json(body)
-        df = df.reset_index(drop=True)
 
         return df

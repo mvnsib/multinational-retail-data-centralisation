@@ -63,11 +63,17 @@ LIMIT 1; -- 12
 
 UPDATE dim_store_details 
 SET
-address = CASE WHEN address = 'N/A' THEN NULL ELSE address END,
-lat = CASE WHEN lat = 'N/A' THEN NULL ELSE lat END,
+address = CASE WHEN address = NULL THEN 'N/A' ELSE address END,
 latitude = CASE WHEN latitude = 'N/A' THEN NULL ELSE latitude END,
-locality = CASE WHEN locality = 'N/A' THEN NULL ELSE locality END,
+locality = CASE WHEN locality = NULL THEN 'N/A'ELSE locality END,
 longitude = CASE WHEN longitude = 'N/A' THEN NULL ELSE longitude END;
+
+UPDATE dim_store_details 
+SET country_code = NULL WHERE store_type = 'Web Portal';
+
+UPDATE dim_store_details 
+SET continent = NULL WHERE store_type = 'Web Portal';
+
 
 ALTER TABLE dim_store_details
 ALTER COLUMN longitude TYPE FLOAT USING longitude::FLOAT,
@@ -220,4 +226,65 @@ ADD CONSTRAINT pk_store_code PRIMARY KEY(store_code);
 
 ALTER TABLE dim_users
 ADD CONSTRAINT pk_user_uuid PRIMARY KEY(user_uuid);
+
+
+-- task 9
+
+INSERT INTO dim_card_details (card_number)
+SELECT DISTINCT ot.card_number
+FROM orders_table ot
+LEFT JOIN dim_card_details dcd ON ot.card_number = dcd.card_number
+WHERE dcd.card_number IS NULL;
+
+INSERT INTO dim_users (user_uuid)
+SELECT DISTINCT du.user_uuid
+FROM orders_table ot
+LEFT JOIN dim_users du ON ot.card_number = du.user_uuid
+WHERE du.user_uuid IS NULL;
+
+INSERT INTO dim_store_details (store_code)
+SELECT DISTINCT ot.store_code
+FROM orders_table ot
+LEFT JOIN dim_store_details dsd ON ot.store_code = dsd.store_code
+WHERE dsd.store_code IS NULL;
+
+
+INSERT INTO dim_products (product_code)
+SELECT DISTINCT ot.product_code
+FROM orders_table ot
+LEFT JOIN dim_products dp ON ot.product_code = dp.product_code
+WHERE dp.product_code IS NULL;
+
+
+
+
+ALTER TABLE orders_table
+ADD CONSTRAINT fk_date_uuid
+FOREIGN KEY(date_uuid)
+REFERENCES dim_date_times(date_uuid)
+
+
+ALTER TABLE orders_table
+ADD CONSTRAINT fk_user_uuid
+FOREIGN KEY(user_uuid)
+REFERENCES dim_users(user_uuid)
+
+
+ALTER TABLE orders_table
+ADD CONSTRAINT fk_card_number
+FOREIGN KEY(card_number)
+REFERENCES dim_card_details(card_number)
+
+
+ALTER TABLE orders_table
+ADD CONSTRAINT fk_store_code
+FOREIGN KEY(store_code)
+REFERENCES dim_store_details(store_code)
+
+
+ALTER TABLE orders_table
+ADD CONSTRAINT fk_product_code
+FOREIGN KEY(product_code)
+REFERENCES dim_products(product_code)
+
 
