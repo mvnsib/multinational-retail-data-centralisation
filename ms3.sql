@@ -239,7 +239,7 @@ WHERE dcd.card_number IS NULL;
 INSERT INTO dim_users (user_uuid)
 SELECT DISTINCT du.user_uuid
 FROM orders_table ot
-LEFT JOIN dim_users du ON ot.card_number = du.user_uuid
+LEFT JOIN dim_users du ON ot.user_uuid = du.user_uuid
 WHERE du.user_uuid IS NULL;
 
 INSERT INTO dim_store_details (store_code)
@@ -254,8 +254,6 @@ SELECT DISTINCT ot.product_code
 FROM orders_table ot
 LEFT JOIN dim_products dp ON ot.product_code = dp.product_code
 WHERE dp.product_code IS NULL;
-
-
 
 
 ALTER TABLE orders_table

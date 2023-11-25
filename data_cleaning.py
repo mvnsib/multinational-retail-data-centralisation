@@ -76,11 +76,24 @@ class DataCleaning:
         return store_df
 
     def clean_products_data(self, products_df):
+        def clean_price(price_df):
+            price_df = str(price_df)
+            if "£" in price_df:
+                price_df = price_df.replace("£", "")
+            return price_df
+
         products_df.replace("NULL", np.NaN, inplace=True)
         products_df["date_added"] = pd.to_datetime(
             products_df["date_added"], errors="coerce"
         )
-        products_df.dropna(subset=["date_added"], how="any", axis=0, inplace=True)
+        # products_df.dropna(subset=["date_added"], how="any", axis=0, inplace=True)
+
+        products_df["product_price"] = products_df["product_price"].apply(clean_price)
+        products_df["product_price"] = pd.to_numeric(
+            products_df["product_price"], errors="coerce"
+        )
+        products_df.dropna(subset=["product_price"], how="any", axis=0, inplace=True)
+        products_df.to_csv("dim_products_unclean.csv", encoding="utf-8")
         return products_df
 
     def convert_product_weights(self, products_df):
@@ -132,8 +145,8 @@ class DataCleaning:
         return products_df
 
     def clean_orders_data(self, order_df):
-        order_df.drop("level_0", axis=0, inplace=True)
-        order_df = order_df.drop(columns=["first_name", "last_name", "1"])
+        order_df.drop("level_0", axis=1, inplace=True)
+        order_df.drop(columns=["first_name", "last_name", "1"], axis=1, inplace=True)
 
         return order_df
 
