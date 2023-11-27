@@ -89,6 +89,52 @@ ORDER BY total_sales ASC;
 
 -- task 9
 
---WITH CLAUSE creates a temporary table
--- CTE
+WITH cte_date_time(date_uuid, year, month, day, hour, minutes, seconds) as (
+		SELECT date_uuid,year, month, day,
+		EXTRACT(hour FROM timestamp::time) AS hour,
+		EXTRACT(minute FROM timestamp::time) AS minutes,
+		EXTRACT(second FROM timestamp::time) AS seconds
+		FROM dim_date_times),
+
+	
+	cte_timestamp(timestamp, date_uuid, year) AS (
+		SELECT MAKE_TIMESTAMP(dt.year::INT, 
+							  dt.month::INT,
+							  dt.day::INT,
+							  dt.hour::INT,
+							  dt.minutes::INT,
+							  dt.seconds::FLOAT
+							  ),
+				dt.date_uuid,
+				dt.year
+		FROM cte_date_time dt
+	),
+	
+
+	cte_time_diff(year, cte_timestamp) AS (
+		SELECT ts.year, LEAD(ts.timestamp) OVER (ORDER BY ts.timestamp ASC) - ts.timestamp AS time_diff
+		FROM orders_table
+		LEFT JOIN cte_timestamp ts ON orders_table.date_uuid = ts.date_uuid
+	),
+	
+	
+	year_diffs(year, avg_timestamp_diff) AS (
+		SELECT year, AVG(cte_timestamp) AS avg_timestamp_diff
+		FROM cte_time_diff
+		GROUP BY year
+		ORDER BY avg_timestamp_diff DESC)
+		
+SELECT 
+	year, 
+	CONCAT('hours:', EXTRACT(HOUR FROM avg_timestamp_diff), '  ',
+					'minutes:', EXTRACT(MINUTE FROM avg_timestamp_diff),'  ',
+				   'seconds:', ROUND(EXTRACT(SECOND FROM avg_timestamp_diff)),'  ',
+				   'milliseconds:', ROUND(EXTRACT(MILLISECOND FROM avg_timestamp_diff))) AS actual_time_taken
+FROM year_diffs
+LIMIT 5;
+	
+	
+		
+	
+
 

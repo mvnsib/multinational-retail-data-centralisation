@@ -93,12 +93,9 @@ def upload_dim_date_times():
 
 
 if __name__ == "__main__":
-    # creds = connector.read_db_creds("db_creds.yaml")
-    # engine = connector.init_db_engine(creds)
-    # engine.connect()
-    # upload_user()
-    # upload_dim_card_details()
-    # upload_store_details()
+    upload_user()
+    upload_dim_card_details()
+    upload_store_details()
     upload_dim_products()
-    # upload_order_table()
-    # upload_dim_date_times()
+    upload_order_table()
+    upload_dim_date_times()

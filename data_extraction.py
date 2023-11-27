@@ -26,7 +26,6 @@ class DataExtractor:
             columns = result.keys()
             df = pd.DataFrame(data, columns=columns)
             return df
-            # return pd.read_sql_table(table, con=conn)
 
     def retrieve_pdf_data(self, link):
         df = pd.concat(tabula.read_pdf(link, pages="all"), ignore_index=True)
@@ -48,17 +47,13 @@ class DataExtractor:
             api_url_base = f"{self.store_data_url}{store}"
             api_url_base = str(api_url_base)
             response = requests.get(api_url_base, headers=key)
-            # content = response.text
-            # result = json.loads(content)
-            data.append(pd.json_normalize(response.json()))
 
-        # df = pd.DataFrame(data)
+            data.append(pd.json_normalize(response.json()))
 
         return pd.concat(data)
 
     def extract_from_s3(self, bucket, key):
         s3_client = boto3.client("s3")
-
         response = s3_client.get_object(Bucket=bucket, Key=key)
         data = response["Body"]
         df = pd.read_csv(data)
@@ -72,5 +67,4 @@ class DataExtractor:
         obj = s3_client.Object(bucket, key)
         body = obj.get()["Body"]
         df = pd.read_json(body)
-
         return df

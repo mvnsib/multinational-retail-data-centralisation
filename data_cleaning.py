@@ -1,26 +1,10 @@
 import pandas as pd
 import numpy as np
-import re
 
 
 class DataCleaning:
     def __init__(self):
         pass
-
-    # def clean_null(self, table):
-    #     table = pd.DataFrame(table)
-    #     table.replace("NULL", np.NaN, inplace=True)
-    #     table.dropna(
-    #         subset=["date_of_birth", "email_address", "user_uuid"],
-    #         how="any",
-    #         axis=0,
-    #         inplace=True,
-    #     )
-    #     return table
-
-    # def clean_date(self, table, column):
-    #     table[column] = pd.to_datetime(table[column], errors="coerce")
-    #     return table[column]
 
     def clean_user_data(self, user_df):
         user_df["date_of_birth"] = pd.to_datetime(
@@ -58,17 +42,6 @@ class DataCleaning:
             store_df["opening_date"], errors="coerce"
         )
         store_df.loc[[31, 179, 248, 341, 375], "staff_numbers"] = [78, 30, 80, 97, 39]
-        # store_df["staff_numbers"] = store_df["staff_numbers"].astype(str)
-        # store_df["staff_numbers"] = pd.to_numeric(
-        #     store_df["staff_numbers"].apply(self.remove_letters),
-        #     errors="coerce",
-        #     downcast="integer",
-        # )
-
-        # store_df["staff_numbers"] = store_df["staff_numbers"].astype(int)
-        # store_df.dropna(
-        #     subset=["staff_numbers", "opening_date"], how="any", inplace=True
-        # )
         store_df["staff_numbers"] = pd.to_numeric(
             store_df["staff_numbers"], errors="coerce"
         )
@@ -86,7 +59,6 @@ class DataCleaning:
         products_df["date_added"] = pd.to_datetime(
             products_df["date_added"], errors="coerce"
         )
-        # products_df.dropna(subset=["date_added"], how="any", axis=0, inplace=True)
 
         products_df["product_price"] = products_df["product_price"].apply(clean_price)
         products_df["product_price"] = pd.to_numeric(
