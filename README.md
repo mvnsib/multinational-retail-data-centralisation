@@ -52,6 +52,7 @@ To install this project, it's required to install the latest version of
 │  └─ dim_store_data.csv
 ├─ data_cleaning.py
 ├─ database_utils.py
+├─ data_extraction.py
 ├─ main.py
 ├─ ms3.sql
 ├─ ms4.sql
